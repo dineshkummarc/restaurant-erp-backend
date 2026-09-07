@@ -5,12 +5,15 @@ use App\Foundation\Base\BaseUseCase;
 use App\Http\Requests\Order\OrderCreateRequest;
 use App\Models\MenuItem;
 use App\Models\Order;
+use App\Models\Reservation;
 use App\Modules\MenuItem\Repository\MenuItemRepository;
 use App\Modules\Order\Exceptions\OrderException;
 use App\Modules\Order\Infra\OrderRepository;
+use App\Modules\Reservation\Infra\Repository\ReservationRepository;
 use App\Modules\StockMovment\Enums\StockMovmentReferenceTypeEnum;
 use App\Modules\StockMovment\Handlers\StockMovmentHandler;
 use App\Modules\StockMovment\Repository\StockMovmentRepository;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\DB;
 
 final class OrderCreateUseCase extends BaseUseCase
@@ -18,7 +21,8 @@ final class OrderCreateUseCase extends BaseUseCase
     public function __construct(
         private readonly OrderRepository $orderRepository,
         private readonly MenuItemRepository $menuItemRepository,
-        private readonly StockMovmentRepository $stockMovmentRepository
+        private readonly StockMovmentRepository $stockMovmentRepository,
+        private readonly ReservationRepository $reservationRepository
     ){
         parent::__construct($orderRepository);
     }
@@ -46,6 +50,16 @@ final class OrderCreateUseCase extends BaseUseCase
                }, $payload["items"]);
             });
             $order->items()->createMany($itemPayload);
+            $reservation = null;
+            if(isset($payload["reservation_id"]) && !empty($payload["reservation_id"])){
+                $reservation = $this->reservationRepository->find($payload["reservation_id"]);
+            }
+            if($reservation instanceof Reservation){
+                if(!$reservation->isOwner()){
+                    throw new AuthorizationException;
+                }
+                $reservation->setAsSeated();
+            }
             $stockMovementHandler = new StockMovmentHandler($this->stockMovmentRepository);
             $handler = $stockMovementHandler->handler(StockMovmentReferenceTypeEnum::SALE);
             $handler->handle($order, $payload);

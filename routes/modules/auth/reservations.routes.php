@@ -10,5 +10,7 @@ Route::controller(ReservationController::class)->group(function(){
         Route::get("/{id}", "show")->name("show");
         Route::put("/", "update")->name("update");
         Route::delete("/{id}", "delete")->name("delete");
+        Route::put("/{reservation}/status/{status}", "status")->name("status");
+        Route::get('/table/{table_id}/date/{date}', 'listByTableAndDate')->name('listByTableAndDate');
     });
 });

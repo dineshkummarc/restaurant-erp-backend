@@ -4,6 +4,7 @@ namespace App\Modules\Reservation\UseCases;
 use App\Http\Requests\PaginateRequest;
 use App\Http\Resources\Reservation\ReservationResource;
 use App\Modules\Reservation\Infra\Repository\ReservationRepository;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 final class ReservationListUseCase
 {
@@ -17,13 +18,25 @@ final class ReservationListUseCase
         $collection = ReservationResource::collection(
             $this->reservationRepository->findAll($paginate)
         );
-        return $collection->collection->groupBy(fn($res) => explode(':', $res->hour)[0]);
+        return response()->json([
+            'data' => $collection->collection->groupBy(
+                fn($res) => explode(':', $res->hour)[0]
+            ),
+            'meta' => $this->reservationRepository->metas()
+        ]);
     }
 
     public function listById(int $id)
     {
         return new ReservationResource(
             $this->reservationRepository->find($id)
+        );
+    }
+
+    public function listByTableAndDate(int $tableId, string $date): ReservationResource
+    {
+        return new ReservationResource(
+            $this->reservationRepository->findByTableAndDate($tableId, $date)
         );
     }
 }

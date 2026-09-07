@@ -22,13 +22,15 @@ class OrderCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "waiter_id" => "nullable|integer",
-            "table_id"  => "required|integer",
-            "customer_name" => "nullable|string",
-            "status"        => "nullable|integer",
-            "payment_status"    => "nullable|integer",
-            "payment_method"    => "nullable|integer",
-            "observation"       => "nullable|string",
+            "waiter_id"             => "nullable|integer",
+            "table_id"              => "required|integer",
+            "customer_name"         => "nullable|string",
+            "status"                => "nullable|integer",
+            "payment_status"        => "nullable|integer",
+            "payment_method"        => "nullable|integer",
+            "observation"           => "nullable|string",
+            "customers_quantity"    => "nullable|integer",
+            "reservation_id"        => "nullable|integer",
             ...OrderItemsRequest::capture()->rules()
         ];
     }

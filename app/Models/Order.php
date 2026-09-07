@@ -30,7 +30,9 @@ class Order extends BaseModel
         "transfert_reason",
         "close_at",
         "business_day",
-        "created_by"
+        "created_by",
+        "customers_quantity",
+        "reservation_id"
     ];
 
     protected $casts = [

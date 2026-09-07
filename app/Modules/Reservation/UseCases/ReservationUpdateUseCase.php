@@ -5,10 +5,12 @@ use App\Http\Requests\Reservation\ReservationCreateRequest;
 use App\Http\Requests\Reservation\ReservationUpdateRequest;
 use App\Models\Reservation;
 use App\Models\Table;
+use App\Modules\Reservation\Enums\ReservationStatusEnum;
 use App\Modules\Reservation\Exceptions\ReservationException;
 use App\Modules\Reservation\Infra\Repository\ReservationRepository;
 use App\Modules\Table\Exceptions\TableException;
 use App\Modules\Table\Repository\TableRepository;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 final class ReservationUpdateUseCase
 {
@@ -37,5 +39,14 @@ final class ReservationUpdateUseCase
         }
         $payload['duration']    = $payload['duration'] ? date('H:i', strtotime($payload['duration'])) : null;
         $this->reservationRepository->update($reservation, $payload);
+    }
+
+    public function status(Reservation $reservation, int $status): void
+    {
+        if(!$reservation->isOwner()){
+            throw new UnauthorizedHttpException;
+        }
+        $statusEnum = ReservationStatusEnum::from($status);
+        $this->reservationRepository->update($reservation, ['status' => $statusEnum->value]);
     }
 }

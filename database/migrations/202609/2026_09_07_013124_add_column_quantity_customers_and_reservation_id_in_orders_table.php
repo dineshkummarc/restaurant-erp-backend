@@ -1,0 +1,31 @@
+<?php
+
+use App\Models\Reservation;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+   public function up(): void
+    {
+        Schema::table('orders', function (Blueprint $table) {
+            $table->foreignIdFor(Reservation::class)->nullable()->after('parent_order_id')->constrained();
+             $table->smallInteger("customers_quantity")->nullable()->after("customer_name");
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('orders', function (Blueprint $table) {
+            $table->dropForeign(["reservation_id"]);
+            $table->dropColumn(["customers_quantity", "reservation_id"]);
+        });
+    }
+};
