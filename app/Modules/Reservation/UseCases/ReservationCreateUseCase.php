@@ -27,7 +27,6 @@ final class ReservationCreateUseCase
             throw new ReservationException("A mesa selecionada está com uma reserva aberta", 400);
         }
         $payload['date'] = date('Y-m-d', strtotime($payload['date']));
-        $payload['hour']    = date('H:i', strtotime($payload['hour']));
         $payload['duration']    = $payload['duration'] ? date('H:i', strtotime($payload['duration'])) : null;
         $this->reservationRepository->save($payload);
     }

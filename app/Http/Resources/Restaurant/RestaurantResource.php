@@ -30,6 +30,7 @@ class RestaurantResource extends JsonResource
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'logo' => $this->logo,
+            'reservation_buffer_time' => $this->reservation_buffer_time,
             'address' => new AddressResource($this->address),
         ];
     }

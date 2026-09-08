@@ -7,6 +7,7 @@ use App\Modules\Order\Exceptions\OrderException;
 use App\Modules\Order\Infra\OrderRepository;
 use App\Modules\Payment\Enums\PaymentMethodEnum;
 use App\Modules\Payment\Enums\PaymentStatusEnum;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 final class OrderUpdatePaymentMethodUseCase
@@ -26,10 +27,17 @@ final class OrderUpdatePaymentMethodUseCase
             throw new OrderException("O pedido já foi pago.", 400);
         }
         $payload = [
-            'payment_status' => PaymentStatusEnum::PAID->value,
+            'payment_status'    => PaymentStatusEnum::PAID->value,
             'payment_method'    => $method->value,
-            'status'        => OrderStatusEnum::CLOSED->value
+            'status'            => OrderStatusEnum::CLOSED->value
         ];
-        $this->orderRepository->update($order, $payload);
+        DB::transaction(function () use ($order, $payload) {
+            if($order->isFromReservation()){
+                if(!$order->reservation->status->isFinished()){
+                    $order->reservation->setAsFinished();
+                }
+            }
+            $this->orderRepository->update($order, $payload);
+        });
     }
 }

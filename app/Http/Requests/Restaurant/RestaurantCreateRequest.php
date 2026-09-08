@@ -36,6 +36,7 @@ class RestaurantCreateRequest extends FormRequest
             'latitude'                  => 'numeric|nullable',
             'longitude'                 => 'numeric|nullable',
             'logo'                      => 'file|nullable',
+            'reservation_buffer_time'    => 'string|nullable',
             ...AddressCreateRequest::capture()->rules()
         ];
     }

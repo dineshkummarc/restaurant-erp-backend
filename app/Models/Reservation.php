@@ -26,7 +26,8 @@ class Reservation extends BaseModel
         'created_by',
         'status',
         'duration',
-        'waiter_id'
+        'waiter_id',
+        'buffer_time'
     ];
 
     protected $casts = [
@@ -41,7 +42,8 @@ class Reservation extends BaseModel
     public function hour(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => substr($value, 0, 5)
+            get: fn($value) => substr($value, 0, 5),
+            set: fn($value) => $value ? date('H:i', strtotime($value)) : null,
         );
     }
 
@@ -74,6 +76,33 @@ class Reservation extends BaseModel
     public function setAsSeated(): void
     {
         $this->update(['status' => ReservationStatusEnum::SEATED->value]);
+    }
+
+    public function setAsFinished(): void
+    {
+        $this->update(['status' => ReservationStatusEnum::FINISHED->value]);
+    }
+
+    public function restaurant(): BelongsTo
+    {
+        return $this->belongsTo(Restaurant::class);
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (Reservation $reservation) {
+            if(!$reservation->buffer_time && $reservation->restaurant->reservation_buffer_time){
+                $reservation->buffer_time = $reservation->restaurant->reservation_buffer_time;
+            }
+        });
+    }
+
+    public function bufferTime(): Attribute
+    {
+        return Attribute::make(
+            set: fn($value) => $value ? date('H:i', strtotime($value)) : null,
+            get: fn($value) => $value ? date('H:i', strtotime($value)) : null
+        );
     }
 
 }

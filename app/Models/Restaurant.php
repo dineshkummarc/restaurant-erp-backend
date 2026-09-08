@@ -24,7 +24,8 @@ class Restaurant extends BaseModel
         'enable_technical_sheet',
         'is_active',
         'latitude',
-        'longitude'
+        'longitude',
+        'reservation_buffer_time'
     ];
 
     protected $casts = [
@@ -77,5 +78,13 @@ class Restaurant extends BaseModel
     public function sameChainWith(User $user): bool
     {
         return $this->chain_id === $user->restaurant->chain_id;
+    }
+
+    public function reservationBufferTime(): Attribute
+    {
+        return Attribute::make(
+            set: fn($value) => $value ? date('H:i', strtotime($value)) : null,
+            get: fn($value) => $value ? date('H:i', strtotime($value)) : null
+        );
     }
 }

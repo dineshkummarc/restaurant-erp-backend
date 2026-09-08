@@ -99,4 +99,14 @@ class Order extends BaseModel
         }
         return $now->toDateString();
     }
+
+    public function isFromReservation(): bool
+    {
+        return !is_null($this->reservation_id);
+    }
+
+    public function reservation(): BelongsTo
+    {
+        return $this->belongsTo(Reservation::class);
+    }
 }

@@ -22,6 +22,7 @@ final class RestaurantUpdateUseCase extends \App\Foundation\Base\BaseUseCase
             throw new RestaurantNotFoundExecption;
         }
         DB::transaction(function() use($restaurant, $payload){
+            unset($payload['address']['state']);
             $address = [
                 "model" => Restaurant::class,
                 ...$payload['address']

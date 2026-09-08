@@ -32,7 +32,8 @@ class ReservationCreateRequest extends FormRequest
             'observation'           => 'nullable|string',
             'table_id'              => 'required|integer',
             'waiter_id'             => 'nullable|integer',
-            'duration'              => 'nullable|string'
+            'duration'              => 'nullable|string',
+            'buffer_time'           => 'nullable|string',
         ];
     }
 }

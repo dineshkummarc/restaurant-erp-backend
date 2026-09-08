@@ -7,6 +7,7 @@ enum ReservationStatusEnum: int
     case CONFIRMED = 2;
     case CANCELLED = 3;
     case SEATED = 4;
+    case FINISHED = 5;
 
     public function getLabel(): string
     {
@@ -14,7 +15,9 @@ enum ReservationStatusEnum: int
             self::PENDING   => "Pendente",
             self::CONFIRMED => "Confirmada",
             self::CANCELLED => "Cancelada",
-            self::SEATED    => "Sentado"
+            self::SEATED    => "Sentado",
+            self::FINISHED  => "Finalizada",
+            default => ""
         };
     }
 
@@ -36,6 +39,11 @@ enum ReservationStatusEnum: int
     public function isSeated(): bool
     {
         return $this == self::SEATED;
+    }
+
+    public function isFinished(): bool
+    {
+        return $this == self::FINISHED;
     }
 
     public static function avalaibles(): array
@@ -61,6 +69,7 @@ enum ReservationStatusEnum: int
             self::CONFIRMED => "b-confirmed",
             self::CANCELLED => "b-cancelled",
             self::SEATED => "b-seated",
+            self::FINISHED => "b-confirmed",
             default => ""
         };
     }

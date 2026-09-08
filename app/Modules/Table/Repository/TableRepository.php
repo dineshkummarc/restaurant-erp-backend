@@ -39,7 +39,17 @@ class TableRepository extends BaseRepository
     {
         return $this->newQuery()->whereNotIn("tables.id", function($query){
             $query->select("table_id")->from("orders")->where("status", OrderStatusEnum::OPEN->value);
-        })->get();
+        })
+            ->whereNotIn("tables.id", function($query){
+                $bufferTime = $this->auth->restaurant->reservation_buffer_time ?? null;
+                //dd($bufferTime);
+                if ($bufferTime){
+                    //$bufferTime = Carbon::now()->subMinutes($bufferTime)->format('H:i:s');
+                    $query->select("table_id")->from("reservations")
+                        ->whereRaw("TIMESTAMPDIFF(minute, current_time(), hour) < minute(buffer_time)")
+                            ->whereNotIn("status", [ReservationStatusEnum::SEATED->value, ReservationStatusEnum::FINISHED->value]);
+                }
+            })->get();
     }
 
     public function findAllWithOrders()
@@ -107,6 +117,7 @@ class TableRepository extends BaseRepository
             ->select("tables.*", DB::raw("date_format(r.hour, '%H:%i') as hour"))
                 ->join("reservations as r", "r.table_id", "=", "tables.id")
                     ->whereDate("r.date", $day)
-                        ->get();
+                        ->whereNotIn("r.status", [ReservationStatusEnum::SEATED->value, ReservationStatusEnum::FINISHED->value])
+                            ->get();
     }
 }
