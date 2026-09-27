@@ -10,7 +10,8 @@ class MenuItemRepository extends BaseRepository
 {
     protected array $searchableFields = [
         "id",
-        "name"
+        "name",
+        "category_id"
     ];
     public function __construct()
     {
@@ -24,11 +25,12 @@ class MenuItemRepository extends BaseRepository
 
     public function findAll(?PaginateRequest $paginate = null)
     {
+        $query = $this->getQuery();
         if (!empty($paginate->categories)) {
-            $this->getQuery()->whereIn("category_id", $paginate->categories);
+            $query->whereIn("category_id", $paginate->categories);
         }
         if ($paginate->features){
-            $this->getQuery()->where("featured_types", "LIKE" ,"%". implode(",", $paginate->features) . "%");
+            $query->where("featured_types", "LIKE" ,"%". implode(",", $paginate->features) . "%");
         }
         return parent::findAll($paginate);
     }

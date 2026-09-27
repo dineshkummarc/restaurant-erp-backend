@@ -41,7 +41,7 @@ final class MenuItemUpdateUseCase extends \App\Foundation\Base\BaseUseCase
                 $toSave[] = new TechnicalSheet($sheet);
             }
         }
-        if ($payload["image"] instanceof \Illuminate\Http\UploadedFile){
+        if (isset($payload["image"]) instanceof \Illuminate\Http\UploadedFile){
             $extension = $payload["image"]->getClientOriginalExtension();
             $avatarName = md5(Str::password(28) . strtotime("")).".". $extension;
             $this->cropped_image($payload["image"], 400, 260)

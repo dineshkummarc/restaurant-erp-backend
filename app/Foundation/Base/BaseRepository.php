@@ -166,7 +166,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
             }
         }
         $this->whereRestaurantId();
-        return $this->getQuery()->where($filters)->get()->toArray();
+        return $this->newQuery()->where($filters)->get()->toArray();
     }
     public function findFirstBy(array $columns, array $values, string $direction = 'DESC', string $oderBy = 'id'): BaseModel|Model|Authenticatable|null
     {

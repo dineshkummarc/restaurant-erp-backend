@@ -49,20 +49,21 @@ final class OrderListUseCase
         $yesterday = now()->subDay();
         $todayRevenu = $this->orderRepository->sumRevenueByBusinessDay()[0]?->revenue ?? 0;
         $yesterDayRevenu = $this->orderRepository->sumRevenueByBusinessDay($yesterday)[0]?->revenue ?? 0;
-        $diff = $yesterDayRevenu - $todayRevenu;
-        $diffPercTodayVsYesterdayRevenu = $diff < 0 ? 100 : ($diff == 0 ? 0.00 : $diff * 100 / $yesterDayRevenu);
+        $diff =  $todayRevenu - $yesterDayRevenu;
+        $diffPercTodayVsYesterdayRevenu = $yesterDayRevenu == 0 ? 100 : $diff * 100 / $yesterDayRevenu;
+       
 
         $openings = $this->orderRepository->findBy(['status'], OrderStatusEnum::OPEN->value);
 
         $closedToday = $this->orderRepository->findAllClosed();
-        $closedYesterday = count($this->orderRepository->findBy(['status', 'business_day'], OrderStatusEnum::CLOSED->value, $yesterday));
-        $closedDiff = $closedYesterday - $closedToday->count();
-        $closedPerc = $closedDiff < 0 ? 100 : ($closedDiff == 0 ? 0.00 : $closedDiff * 100 / $closedYesterday);
+        $closedYesterday = count($this->orderRepository->findBy(['status', 'business_day'], OrderStatusEnum::CLOSED->value, $yesterday->format('Y-m-d')));
+        $closedDiff = $closedToday->count() - $closedYesterday;
+        $closedPerc = $closedYesterday == 0 ? 100 : $closedDiff * 100 / $closedYesterday;
 
         $todayMediumTicket = $this->orderRepository->mediumTicket()[0]?->average;
         $yesterdayMediumTicket = $this->orderRepository->mediumTicket($yesterday)[0]?->average;
-        $mediumTicketDiff = $yesterdayMediumTicket - $todayMediumTicket;
-        $mediumTicketPerc = $mediumTicketDiff < 0 ? 100 : ($mediumTicketDiff == 0 ? 0.00 : $mediumTicketDiff * 100 / $yesterdayMediumTicket);
+        $mediumTicketDiff = $todayMediumTicket - $yesterdayMediumTicket;
+        $mediumTicketPerc = $yesterdayMediumTicket == 0 ? 100 : $mediumTicketDiff * 100 / $yesterdayMediumTicket;
 
         $freeTables = $this->tableRepository->findAllAvailable();
         $allTables = $this->tableRepository->findAll();
@@ -72,7 +73,7 @@ final class OrderListUseCase
         return  [
             'today' => [
                 'amount'    => (float)$todayRevenu,
-                'diff'      => $diffPercTodayVsYesterdayRevenu
+                'diff'      => number_format($diffPercTodayVsYesterdayRevenu, 2, '.', '.')
             ],
             'opening' => [
                 'quantity'  => count($openings)
@@ -83,7 +84,7 @@ final class OrderListUseCase
             ],
             'medium_ticket' => [
                 'amount'    => (float)number_format($todayMediumTicket, 2, '.', '.'),
-                'diff'      => $mediumTicketPerc
+                'diff'      => number_format($mediumTicketPerc, 2, '.', '.')
             ],
             'tables'    => [
                 'free'  => $freeTables->count(),
