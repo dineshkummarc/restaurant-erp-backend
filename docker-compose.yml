@@ -14,10 +14,11 @@ services:
       - mysql
     networks:
       - restaurant
+      - api-gateway-network
 
   nginx:
     image: nginx:latest
-    container_name: laravel_nginx
+    container_name: restaurant_nginx
     restart: unless-stopped
     ports:
       - "8000:80"
@@ -28,6 +29,7 @@ services:
       - app
     networks:
       - restaurant
+      - api-gateway-network
 
   mysql:
     image: mysql:8
@@ -47,6 +49,8 @@ services:
 
 networks:
   restaurant:
+  api-gateway-network:
+    external: true
 
 volumes:
   mysql_data:

@@ -23,6 +23,10 @@ class MenuItemResource extends JsonResource
                 "label" => $this->getPrice(),
                 "value" => $this->price
             ],
+            "promotional_price" => [
+                "label" => $this->getCurrency("promotional_price"),
+                "value" => $this->promotional_price
+            ],
             "category"  => [
                 "id"    => $this->category->id,
                 "name"  => $this->category->name

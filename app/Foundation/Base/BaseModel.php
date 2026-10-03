@@ -74,6 +74,11 @@ class BaseModel extends Model
         return Number::currency($this->price ?? 0, 'BRL', 'pt-BR');
     }
 
+    public function getCurrency(string $column): string
+    {
+        return Number::currency($this->{$column} ?? 0, 'BRL', 'pt-BR');
+    }
+
     public function since($custom_column_date = 'created_at')
     {
         $date = Carbon::createFromFormat("Y-m-d H:i:s",$this->{$custom_column_date} ?? now());

@@ -18,8 +18,7 @@ final class MenuItemCreateUseCase extends \App\Foundation\Base\BaseUseCase
         if (!empty($exists)){
             throw new MenuItemException("recurso já existe", 400);
         }
-
-        if (isset($payload["image"]) instanceof \Illuminate\Http\UploadedFile){
+        if (isset($payload["image"]) && $payload["image"] instanceof \Illuminate\Http\UploadedFile){
             $extension = $payload["image"]->getClientOriginalExtension();
             $avatarName = md5($payload["image"]->getClientOriginalName() . strtotime("now")).".". $extension;
             $this->cropped_image($payload["image"], 400, 260)

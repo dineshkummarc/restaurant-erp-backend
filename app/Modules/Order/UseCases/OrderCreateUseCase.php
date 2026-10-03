@@ -45,7 +45,8 @@ final class OrderCreateUseCase extends BaseUseCase
             $items->each(function(MenuItem $item) use ($payload, &$itemPayload){
                array_map(function($orderItem) use ($item, &$itemPayload){
                    if ($orderItem["menu_item_id"] == $item->id){
-                        $itemPayload[] = [...$orderItem, ...['unit_price'   => $item->price]];
+                        $priceToUse = $item->getPriceToUse();
+                        $itemPayload[] = [...$orderItem, ...['unit_price'   => $priceToUse]];
                    }
                }, $payload["items"]);
             });

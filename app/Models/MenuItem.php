@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Foundation\Base\BaseModel;
+use App\Modules\MenuItem\Enums\FeaturedMenuItemEnum;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -98,5 +99,24 @@ class MenuItem extends BaseModel
     public function isEnableTechnicalheet(): bool
     {
         return $this->enable_technical_sheet;
+    }
+
+    public function hasPromotionFeature(): bool
+    {
+        if(!$this->featured_types){
+            return false;
+        }
+        $featuredTypes = array_map(fn($v) => (int)$v, explode(",", $this->featured_types));
+        return in_array(FeaturedMenuItemEnum::PROMOTION->value, $featuredTypes);
+    }
+
+    public function usePromotionalPrice(): bool
+    {
+        return $this->hasPromotionFeature() && !empty($this->promotional_price);
+    }
+
+    public function getPriceToUse(): float
+    {
+        return $this->usePromotionalPrice() ? $this->promotional_price : $this->price;
     }
 }

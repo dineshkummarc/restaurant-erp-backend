@@ -22,11 +22,14 @@ class OrderItemsRequest extends FormRequest
     public function rules(): array
     {
         return [
-           "items" => "required|array",
-           "items.*.order_item_id"  => "nullable|integer",
-           "items.*.menu_item_id" => "required|integer",
-           "items.*.quantity" => "required|integer",
-           "items.*.unit_price" => "nullable|numeric"
+           "items"                                  => "required|array",
+           "items.*.order_item_id"                  => "nullable|integer",
+           "items.*.menu_item_id"                   => "required|integer",
+           "items.*.quantity"                       => "required|integer",
+           "items.*.unit_price"                     => "nullable|numeric",
+           "items.*.side_dishes"                    => "nullable|array",
+           "items.*.side_dishes.*.menu_item_id"     => "required|integer",
+           "items.*.side_dishes.*.quantity"         => "required|integer",
         ];
     }
 }
